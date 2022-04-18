@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useTransactions } from "../../hooks/useTransactions";
 
 import { api } from "../../services/api";
 
@@ -6,10 +7,7 @@ import { Container } from "./styles";
 
 export function TransactionsTable(){
 
-    useEffect(() => {
-        api.get('http://localhost:3000/api/transactions')
-        .then(response => console.log(response.data))
-    }, []);
+    const {transactions} = useTransactions();
 
     return(
         <Container>
@@ -25,19 +23,26 @@ export function TransactionsTable(){
                 </thead>
 
                 <tbody>
-                    <tr>
-                        <td>Desenvolvimento de Website</td>
-                        <td className="withdraw">R$ 12.000,00</td>
-                        <td>Desenvolvimento de Website</td>
-                        <td>12/04/2022</td>        
-                    </tr>
+                    {
+                      transactions.map(item => 
+                        <tr key={item.id}>
 
-                    <tr>
-                        <td>Desenvolvimento de Website</td>
-                        <td className="deposit">R$ 12.000,00</td>
-                        <td>Desenvolvimento de Website</td>
-                        <td>12/04/2022</td>        
-                    </tr>
+                            <td>{item.title}</td>
+
+                            <td className={item.type}>
+                              {item.type === 'withdraw' && '-'}  { new Intl.NumberFormat('pt-BR', {
+                                    style: 'currency',
+                                    currency: 'BRL'
+                                }).format(item.amount)}
+                            </td>
+
+                            <td>{item.category}</td>
+
+                            <td>{new Intl.DateTimeFormat('pt-BR').format(new Date(item.createdAt))}</td>   
+
+                        </tr>
+                        )}
+
                 </tbody>
 
             </table>
